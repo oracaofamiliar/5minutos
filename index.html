@@ -125,23 +125,50 @@
     </script>
     <link rel='stylesheet' id='dashicons-css' href='/5minutos/wp-includes/css/dashicons.min.css?ver=6.8.3' media='all' />
     <link rel='stylesheet' id='admin-bar-css' href='/5minutos/wp-includes/css/admin-bar.min.css?ver=6.8.3' media='all' />
-    <style id='admin-bar-inline-css'>
-        @media screen {
-            html {
-                margin-top: 32px !important;
-            }
-        }
-
-        @media screen and ( max-width: 782px) {
-            html {
-                margin-top: 46px !important;
-            }
-        }
+<style id='admin-bar-inline-css'>
+        /* 1. REMOVE BARRA DO ADMIN E MARGENS */
+        #wpadminbar { display: none !important; }
+        html, body.admin-bar { margin-top: 0 !important; }
 
         @media print {
-            #wpadminbar {
-                display: none;
-            }
+            #wpadminbar { display: none; }
+        }
+
+        /* 2. CORREÇÃO DO FAQ (ACORDEÃO) */
+
+        /* Regra A: A caixa "Pai" (direta do toggle) começa escondida */
+        .elementor-toggle-item > .elementor-tab-content {
+            display: none; 
+        }
+
+        /* Regra B: A caixa "Filho" (conteúdo real) deve estar SEMPRE visível */
+        .elementor-tab-content .elementor-tab-content {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            height: auto !important;
+            background: transparent !important;
+        }
+
+        /* Regra C: Estilo do Texto (Branco e Legível) */
+        .elementor-tab-content, 
+        .elementor-tab-content p, 
+        .elementor-tab-content div,
+        .elementor-tab-content span {
+            color: #ffffff !important; /* Texto Branco */
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Regra D: Classe que o JavaScript adiciona para abrir */
+        .faq-aberto {
+            display: block !important;
+            animation: surgirSuave 0.5s;
+        }
+
+        @keyframes surgirSuave {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
     <link rel='stylesheet' id='elementor-icons-css' href='/5minutos/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons.min.css?ver=5.44.0' media='all' />
@@ -1741,7 +1768,7 @@
                                                         data-message-model-slug="gpt-4o">
                                                         <div class="flex w-full flex-col gap-1 empty:hidden first:pt-[3px]">
                                                             <div class="markdown prose dark:prose-invert w-full break-words dark">
-                                                                <p data-start="16" data-end="555">Somos Luana e Bruno, casados há mais de 20 anos e há 11 caminhando com Cristo em família. Pais da Geovana (17), da Ana (7) e do Lucas (5), vivemos na pele os desafios — e as alegrias — de
+                                                                <p data-start="16" data-end="555">Somos Luana e Bruno, casados há mais de 20 anos e há 11 caminhando com Cristo em família. Pais da Geovana (17), da Ana (7) e do Lucas (6), vivemos na pele os desafios — e as alegrias — de
                                                                     criar filhos em um lar cristão. Já tropeçamos, já voltamos atrás, já aprendemos (e seguimos aprendendo) o valor de colocar Deus no centro, mesmo quando a rotina aperta. Sabemos como é
                                                                     conciliar a fé com o barulho do dia a dia, com as perguntas difíceis de uma adolescente sobre propósito e identidade, ou com a correria entre tarefas, escola e oração.</p>
                                                                 <p data-start="557"
@@ -2627,8 +2654,36 @@ src="https://www.facebook.com/tr?id=1240978250521698&ev=PageView&noscript=1"
     <script src="/5minutos/wp-content/plugins/elementor/assets/js/elementor-admin-bar.min.js?ver=3.32.5" id="elementor-admin-bar-js"></script>
     <script src="/5minutos/wp-includes/js/hoverintent-js.min.js?ver=2.2.1" id="hoverintent-js-js"></script>
     <script src="/5minutos/wp-includes/js/admin-bar.min.js?ver=6.8.3" id="admin-bar-js"></script>
-    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"c1ee9b679fc04a9cb093730e48cbdd2d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
-        crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Seleciona os títulos
+        var titles = document.querySelectorAll(".elementor-tab-title");
+
+        // Limpa eventos antigos para não travar
+        titles.forEach(function(title) {
+            var newTitle = title.cloneNode(true);
+            title.parentNode.replaceChild(newTitle, title);
+        });
+
+        // Adiciona a nova lógica de clique
+        var cleanTitles = document.querySelectorAll(".elementor-tab-title");
+
+        cleanTitles.forEach(function(title) {
+            title.addEventListener("click", function(e) {
+                e.preventDefault();
+
+                // 1. Gira a setinha visualmente
+                this.classList.toggle("elementor-active");
+
+                // 2. Seleciona a caixa de resposta
+                var content = this.nextElementSibling;
+
+                // 3. Abre ou fecha usando a nossa classe especial
+                content.classList.toggle("faq-aberto");
+            });
+        });
+    });
+</script>
 </body>
 
 </html>
